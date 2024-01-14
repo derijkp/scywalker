@@ -1,0 +1,212 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec tclsh "$0" ${1+"$@"}
+
+#
+# Copyright (c) by Peter De Rijk (VIB - University of Antwerp)
+# See the file "license.txt" for information on usage and redistribution of
+# this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+
+# see where we are, add the lib dir in the original location to auto_path, load extension
+set script [file join [pwd] [info script]]
+set scriptname [file tail $script]
+while 1 {
+	if {[catch {set script [file join [pwd] [file readlink $script]]}]} break
+}
+
+set appdir [file dir $script]
+if {[lrange [file split $script] end-2 end] eq {apps cg cg.tcl}} {
+	set appbasedir [file dir [file dir $appdir]]
+	set auto_path [list $appbasedir/lib $appbasedir/lib/tcl8.5 $appbasedir/lib/tk8.5]
+}
+#lappend auto_path $appdir/lib
+#source $appdir/lib/file.tcl
+package require Extral
+
+proc pathsep {} {
+	if {$::tcl_platform(platform) eq "windows"} {return \;} else {return \:}
+}
+
+proc scywalkerenv {} {
+	global auto_path env appdir tcl_dirtcl scywalkerdir externdir
+	if {![info exists appdir]} {
+		set appdir ${scywalker::dir}
+	}
+	if {[file dir [file dir $appdir]] eq [get tcl_dirtcl ""]} {
+		# we are being run from a dirtcl installation in apps/scywalker
+		set scywalkerdir $tcl_dirtcl
+		set externdir $scywalkerdir/bin
+		set bindir $appdir/bin
+		set extradir $scywalkerdir/extra
+		set cgdir $scywalkerdir
+	} else {
+		# we are being run from dev 
+		set scywalkerdir $appdir
+		set externdir $scywalkerdir/extern
+		set bindir $scywalkerdir/bin
+		set extradir $scywalkerdir/extra
+		set cgdir [file dir $scywalkerdir]/genomecomb
+	}
+	# Setting LANG to "C" tells all unix tools (e.g. sort) to consider only basic ASCII characters and disable UTF-8 multibyte match
+	# This can improve performance substantially
+	set env(LANG) C
+	set env(LC_ALL) C
+	# add to paths
+	set env(PATH) $cgdir[pathsep]$bindir[pathsep]$externdir[pathsep]$scywalkerdir[pathsep]$extradir[pathsep]$env(PATH)
+	if {[info exists env(LD_LIBRARY_PATH)]} {
+		set env(LD_LIBRARY_PATH) $::externdir/lib:$env(LD_LIBRARY_PATH)
+	} else {
+		set env(LD_LIBRARY_PATH) $::externdir/lib
+	}
+	return $scywalkerdir
+}
+
+array set ::gzexts {
+	.zst zst
+	.rz razip
+	.lz4 lz4
+	.gz gzip
+	.bgz bgzip
+	.bz2 bzip2
+}
+
+proc isgzext ext {
+	info exists ::gzexts($ext)
+}
+
+proc gzroot filename {
+	if {[isgzext [file extension $filename]]} {
+		return [file root $filename]
+	} else {
+		return $filename
+	}
+}
+
+proc formaterror {} {
+	puts stderr "scywalker_makerefdir ?options? refdir genomesequence.fasta transcripts.gtf"
+	puts stderr "  with options: -organelles, -nolowgenecutoff"
+	exit 1
+}
+
+scywalkerenv
+
+# generic help on no args
+if {[llength $argv] < 1} {
+	formaterror
+}
+
+
+proc scywalker_makerefdir {args} {
+	set organelles {}
+	set transcripts {}
+	set nolowgenecutoff 200000
+	set pos 0
+	foreach {key value} $args {
+		switch $key {
+			-organelles {
+				set organelles $value
+				incr pos 2
+			}
+			-nolowgenecutoff {
+				set nolowgenecutoff $value
+				incr pos 2
+			}
+			default break
+		}
+	}
+	set args [lrange $args $pos end]
+	if {[llength $args] > 3} {
+		if {[string index [lindex $args 0] 0] == "-"} {
+			puts stderr "error calling scywalker_makerefdir: unknown option "[lindex $args 0]", must be one of: -organelles, -transcripts"
+		} else {
+			formaterror
+		}
+		exit 1
+	}
+	foreach {refdir genomefasta transcripts} $args break
+	if {[file exists $refdir]} {
+		puts stderr "error: target refdir $refdir already exists"
+		exit 1
+	}
+	set refdir [file normalize $refdir]
+	set tail [file tail $refdir]
+	set build $tail
+	file mkdir $refdir
+	file mkdir $refdir/extra
+
+	# make ifas
+	set result $refdir/genome_$tail.ifas
+	puts "Making genome $result"
+	exec cg fas2ifas $genomefasta $result
+	exec samtools faidx $result
+
+	# fullgenome
+	unset -nocomplain a
+	set rfile $refdir/extra/reg_${build}_fullgenome.tsv
+	puts "Making $rfile"
+	set data [file_read $result.fai]
+	set o [open $rfile.temp w]
+	puts $o chromosome\tbegin\tend
+	list_foreach {chromosome len} [lrange [split [string trim $data] \n] 0 end] {
+		set a($chromosome) 1
+		puts $o $chromosome\t0\t$len
+	}
+	close $o
+	file rename -force -- $rfile.temp $rfile
+
+	if {$organelles ne ""} {
+		puts "Writing $refdir/extra/reg_${build}_organelles.tsv"
+		foreach organelle $organelles {
+			if {![info exists a($organelle)]} {
+				puts stderr "error making organelles file: $organelle is not a chromosome in the given genome"
+				exit 1
+			}
+		}
+		file_write $refdir/extra/reg_${build}_organelles.tsv chromosome\n[join $organelles \n]\n
+	}
+
+	# for cram
+	exec cg fasta2cramref $result $result.forcram
+
+	# sequencedgenome
+	set target $refdir/extra/reg_${build}_sequencedgenome.tsv.zst
+	puts "Making $target"
+	exec cg calcsequencedgenome --stack 1 $result | cg zst > $target.temp
+	file rename -force -- $target.temp $target
+
+	# minimap2_splice index
+	puts "Making minimap2 index (can take large amount of memory)"
+	exec cg refseq_minimap2 $result splice
+
+	set target $refdir/genome_${build}.dict
+	exec samtools dict -o $target.temp $result
+	file rename $target.temp $target
+
+	# converting transcripts
+	set root [file root [file tail $transcripts]]
+	regsub ^gene_ $root {} root
+	set target $refdir/gene_${build}_$root.tsv
+	puts "Making $target"
+	set ext [file extension [gzroot $transcripts]]
+	if {$ext eq ".gtf"} {
+		file copy -force $transcripts [file root $target].gtf
+		exec cg gtf2tsv $transcripts $target
+	} elseif {$ext in ".gff .ggf2 .gff3"} {
+		file copy $transcripts [file root $target]$ext
+		exec cg gff2tsv $transcripts $target
+	} elseif {$ext eq ".tsv"} {
+		file copy $transcripts $target
+	} else {
+		puts stderr "format of transcripts file $transcripts not supported: must be one of: gtf, tsv, gff"
+		exit 1
+	}
+
+	set target $refdir/extra/reg_${build}_nolowgene200k.tsv.zst
+	puts "Making $target"
+	exec cg distrreg_nolowgene $refdir $nolowgenecutoff
+
+	puts "Made $refdir (can now be used as refder for scywalker)"
+}
+
+scywalker_makerefdir {*}$argv

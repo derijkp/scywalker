@@ -29,5 +29,10 @@ mkdir apps/scywalker
 cp $srcdir/scywalker apps/scywalker/scywalker.tcl
 ln -s tclsh8.5 scywalker
 
+mkdir apps/scywalker_makerefdir
+cp $srcdir/scywalker_makerefdir apps/scywalker_makerefdir/scywalker_makerefdir.tcl
+ln -s tclsh8.5 scywalker_makerefdir
+
 cd $builddir
-ln -s scywalker-$version-Linux-x86_64/scywalker scywalker
+ln -sf scywalker-$version-Linux-x86_64/scywalker scywalker
+ln -sf scywalker-$version-Linux-x86_64/scywalker_makerefdir scywalker_makerefdir
