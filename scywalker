@@ -1,0 +1,88 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec tclsh "$0" ${1+"$@"}
+
+#
+# Copyright (c) by Peter De Rijk (VIB - University of Antwerp)
+# See the file "license.txt" for information on usage and redistribution of
+# this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+
+# see where we are, add the lib dir in the original location to auto_path, load extension
+set script [file join [pwd] [info script]]
+set scriptname [file tail $script]
+while 1 {
+	if {[catch {set script [file join [pwd] [file readlink $script]]}]} break
+}
+
+set appdir [file dir $script]
+if {[lrange [file split $script] end-2 end] eq {apps cg cg.tcl}} {
+	set appbasedir [file dir [file dir $appdir]]
+	set auto_path [list $appbasedir/lib $appbasedir/lib/tcl8.5 $appbasedir/lib/tk8.5]
+}
+#lappend auto_path $appdir/lib
+#source $appdir/lib/file.tcl
+package require Extral
+
+proc pathsep {} {
+	if {$::tcl_platform(platform) eq "windows"} {return \;} else {return \:}
+}
+
+proc scywalkerenv {} {
+	global auto_path env appdir tcl_dirtcl scywalkerdir externdir
+	if {![info exists appdir]} {
+		set appdir ${scywalker::dir}
+	}
+	if {[file dir [file dir $appdir]] eq [get tcl_dirtcl ""]} {
+		# we are being run from a dirtcl installation in apps/scywalker
+		set scywalkerdir $tcl_dirtcl
+		set externdir $scywalkerdir/bin
+		set bindir $appdir/bin
+		set extradir $scywalkerdir/extra
+		set cgdir $scywalkerdir
+	} else {
+		# we are being run from dev 
+		set scywalkerdir $appdir
+		set externdir $scywalkerdir/extern
+		set bindir $scywalkerdir/bin
+		set extradir $scywalkerdir/extra
+		set cgdir [file dir $scywalkerdir]/genomecomb
+	}
+	# Setting LANG to "C" tells all unix tools (e.g. sort) to consider only basic ASCII characters and disable UTF-8 multibyte match
+	# This can improve performance substantially
+	set env(LANG) C
+	set env(LC_ALL) C
+	# add to paths
+	set env(PATH) $cgdir[pathsep]$bindir[pathsep]$externdir[pathsep]$scywalkerdir[pathsep]$extradir[pathsep]$env(PATH)
+	if {[info exists env(LD_LIBRARY_PATH)]} {
+		set env(LD_LIBRARY_PATH) $::externdir/lib:$env(LD_LIBRARY_PATH)
+	} else {
+		set env(LD_LIBRARY_PATH) $::externdir/lib
+	}
+	return $scywalkerdir
+}
+
+scywalkerenv
+
+# generic help on no args
+if {[llength $argv] < 1} {
+	puts stderr "format is: scywalker ?options? ?projectdir/sampledir?"
+	exit 1
+}
+
+proc scywalker {args} {
+	set dir [lindex $args end]
+	if {[catch {
+		if {[file exists $dir/samples]} {
+			exec cg process_project -preset scywalker {*}$args >@ stdout 2>@ stderr
+		} else {
+			exec cg process_sample -preset scywalker {*}$args >@ stdout 2>@ stderr
+		}
+	} msg]} {
+		set msg [string_change $msg {"cg process_project" "scywalker" "cg process_sample" "scywalker"}]
+		puts stderr $msg
+		exit 1
+	}
+}
+
+scywalker {*}$argv
