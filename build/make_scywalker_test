@@ -1,0 +1,89 @@
+#!/bin/sh
+# the next line restarts using cg source \
+exec cg source "$0" ${1+"$@"}
+
+set builddir $env(HOME)/build
+set srcdir $env(HOME)/dev/scywalker
+set testdir $builddir/scywalker_test
+
+mkdir $testdir
+cd $testdir
+
+puts "get wf-single-cell public demo data"
+exec wget -c https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-single-cell/wf-single-cell-demo.tar.gz >@ stdout 2>@ stderr
+exec tar xzvf wf-single-cell-demo.tar.gz >@ stdout 2>@ stderr
+file rename wf-single-cell-demo/fasta/genome.fa genome.fa
+file rename wf-single-cell-demo/genes/genes.gtf genes.gtf
+
+puts "make samples (with split fastq)"
+mkdir test10x/samples/mix1/fastq
+cg fastq_split -parts 100 wf-single-cell-demo/chr17.fq.gz test10x/samples/mix1/fastq/scmix_chr17.fastq.gz
+mkdir test10x/samples/mix2/fastq
+set exclude [glob test10x/samples/mix1/fastq/p*6*.fastq.gz]
+set fastqs [glob test10x/samples/mix1/fastq/p*.fastq.gz]
+foreach file $fastqs {
+	if {$file in $exclude} continue
+	mklink $file test10x/samples/mix2/fastq/[file tail $file]
+}
+file delete -force wf-single-cell-demo
+file delete wf-single-cell-demo.tar.gz
+
+puts "write options.tsv"
+file_write $testdir/test10x/options.tsv [deindent {
+	sample	option	value
+	mix1	sc_expectedcells	183
+	mix2	sc_expectedcells	180
+}]
+
+puts "write markers.tsv"
+write_file $testdir/markers.tsv [deindent {
+marker	celltype
+AKR1C3	A549
+H4C3	A549
+SAA1	H2228
+CXCL8	H2228
+TXNIP	H2228
+SLPI	H838
+MYL9	H838
+GSTM3	H838
+GAGE12F	H838
+PIP4K2C	HCC827
+DEFB4A	HCC827
+EGFR	HCC827
+PLAAT4	HCC827
+TBK1	HCC827
+RRS1	H1975
+PRPF31	H1975
+LGALS1	H1975
+}]
+
+puts "write markers_chr17.tsv"
+write_file $testdir/markers_chr17.tsv [deindent {
+marker	celltype
+ALDH3A1	A549
+NME1	A549
+KRT17	H838
+CLDN7	H1975
+TXNDC17	H1975
+RHBDF2	H2228
+IGFBP4	H2228
+ENSG00000290657	HCC827
+MPRIP	HCC827
+}]
+
+puts "make clean backup copy (hardlinked) in ori"
+mkdir $testdir/ori
+exec cp -ral $testdir/test10x $testdir/ori/test10x
+
+# following is code to run the test on the commandline
+# because of the if 0 it is not run when running the script
+if 0 {
+cd $testdir
+scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
+scywalker -stack 1 -v 2 -d 6 \
+	-refdir g17 \
+	-sc_expectedcells 183 \
+	-cellmarkerfile markers_chr17.tsv \
+	-threads 6 \
+	test10x
+}
