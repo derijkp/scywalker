@@ -206,7 +206,7 @@ proc scywalker_makerefdir {args} {
 	puts "Making $target"
 	exec cg distrreg_nolowgene $refdir $nolowgenecutoff
 
-	puts "Made $refdir (can now be used as refder for scywalker)"
+	puts "Made $refdir (can now be used as refdir for scywalker)"
 }
 
 scywalker_makerefdir {*}$argv
