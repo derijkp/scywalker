@@ -4,35 +4,38 @@ builddir=$HOME/build
 version=0.108.0
 
 srcdir=$HOME/dev/scywalker
-cgbin=$builddir/genomecomb-$version-Linux-x86_64
+cgbin=$builddir/genomecomb-$version-linux-x86_64
 cgbin=$builddir/complgen
-swbin=$builddir/scywalker-$version-Linux-x86_64
+swbin=$builddir/scywalker-$version-linux-x86_64
+# swbin=$builddir/scywalker-linux-x86_64
+
 
 cd $builddir
 rm -rf $swbin.old
 cp -ral $cgbin $swbin
 
-# install deps
 cd $swbin
-cp -ral ../minimap2-2.24_x64-linux extra
-cp -ral ../minimap2 extra
-cp -ral ../isoquant-3.3.0-linux-x86_64 extra
-cp -ral ../isoquant extra
-cp -ral ../isoquant3 extra
-cp -ral ../dirR-4.2.1-linux-x86_64 extra
-cp -ral ../dirR extra
-cp -ral ../dirR-4.2.1 extra
+# install deps
+cp -ralf ../minimap2-2.24_x64-linux extra
+cp -ralf ../minimap2 extra
+cp -ralf ../isoquant-3.3.0-linux-x86_64 extra
+cp -ralf ../isoquant extra
+cp -ralf ../isoquant3 extra
+cp -ralf ../dirR-4.2.1-linux-x86_64 extra
+cp -ralf ../dirR extra
+cp -ralf ../dirR-4.2.1 extra
+cp -ralf ../cramino extra
 ln -sf cg sw
 rm update_symlinks.sh wish8.5 wish
 
 mkdir apps/scywalker
 cp $srcdir/scywalker apps/scywalker/scywalker.tcl
-ln -s tclsh8.5 scywalker
+ln -sf tclsh8.5 scywalker
 
 mkdir apps/scywalker_makerefdir
 cp $srcdir/scywalker_makerefdir apps/scywalker_makerefdir/scywalker_makerefdir.tcl
-ln -s tclsh8.5 scywalker_makerefdir
+ln -sf tclsh8.5 scywalker_makerefdir
 
 cd $builddir
-ln -sf scywalker-$version-Linux-x86_64/scywalker scywalker
-ln -sf scywalker-$version-Linux-x86_64/scywalker_makerefdir scywalker_makerefdir
+ln -sf scywalker-$version-linux-x86_64/scywalker scywalker
+ln -sf scywalker-$version-linux-x86_64/scywalker_makerefdir scywalker_makerefdir
