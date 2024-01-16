@@ -36,6 +36,11 @@ mkdir apps/scywalker_makerefdir
 cp $srcdir/scywalker_makerefdir apps/scywalker_makerefdir/scywalker_makerefdir.tcl
 ln -sf tclsh8.5 scywalker_makerefdir
 
+mkdir $swbin/whitelists
+cd $swbin/whitelists
+wget https://teichlab.github.io/scg_lib_structs/data/3M-february-2018.txt.gz
+wget https://teichlab.github.io/scg_lib_structs/data/737K-august-2016.txt.gz
+
 cd $builddir
 ln -sf scywalker-$version-linux-x86_64/scywalker scywalker
 ln -sf scywalker-$version-linux-x86_64/scywalker_makerefdir scywalker_makerefdir
