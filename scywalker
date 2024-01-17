@@ -71,20 +71,14 @@ if {[llength $argv] < 1} {
 proc scywalker {args} {
 	set dir [lindex $args end]
 	set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
-	if {[catch {
-		if {[file exists $dir/samples]} {
-			exec cg process_project \
-				-preset scywalker -sc_whitelist $whitelist \
-				{*}$args >@ stdout 2>@ stderr
-		} else {
-			exec cg process_sample \
-				-preset scywalker -sc_whitelist $whitelist \
-				{*}$args >@ stdout 2>@ stderr
-		}
-	} msg]} {
-		set msg [string_change $msg {"cg process_project" "scywalker" "cg process_sample" "scywalker"}]
-		puts stderr $msg
-		exit 1
+	if {[file exists $dir/samples]} {
+		exec cg process_project \
+			-preset scywalker -sc_whitelist $whitelist \
+			{*}$args >@ stdout 2>@ stderr
+	} else {
+		exec cg process_sample \
+			-preset scywalker -sc_whitelist $whitelist \
+			{*}$args >@ stdout 2>@ stderr
 	}
 }
 
