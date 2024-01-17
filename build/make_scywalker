@@ -18,13 +18,22 @@ cd $swbin
 # install deps
 cp -ralf ../minimap2-2.24_x64-linux extra
 cp -ralf ../minimap2 extra
+
+cp -ralf ../cramino extra
+
 cp -ralf ../isoquant-3.3.0-linux-x86_64 extra
 cp -ralf ../isoquant extra
 cp -ralf ../isoquant3 extra
+cp -ralf ../isoquant_gtf2db extra
+cp -ralf ../isoquant3_gtf2db extra
+
 cp -ralf ../dirR-4.2.1-linux-x86_64 extra
 cp -ralf ../dirR extra
 cp -ralf ../dirR-4.2.1 extra
-cp -ralf ../cramino extra
+cd $swbin/extra/dirR-4.2.1-linux-x86_64/lib64/R/library
+rm -rf BH rstan leafcutter GO.db
+cd $swbin
+
 ln -sf cg sw
 rm update_symlinks.sh wish8.5 wish
 
