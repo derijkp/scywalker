@@ -15,6 +15,9 @@ rm -rf $swbin.old
 cp -ral $cgbin $swbin
 
 cd $swbin
+rm README.txt
+cp $srcdir/README.md .
+
 # install deps
 cp -ralf ../minimap2-2.24_x64-linux extra
 cp -ralf ../minimap2 extra
