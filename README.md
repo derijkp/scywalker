@@ -5,7 +5,7 @@ Copyright VIB and University of Antwerp
 
 Scywalker
 -------
-scywalker is a package designed to analyse single (10x) cell Oxford
+scywalker is a package designed to analyse single cell (10x) Oxford
 nanopore long read data. (without the need for matching short read data).
 It provides end-to-end analysis in one command: Starting from fastqs, it
 will find and assign cellbarcodes, align reads, and reconstruct (based on
@@ -52,7 +52,13 @@ or by placing the directory in the PATH environment variable (e.g. using
 `export PATH=~/bin/:$PATH`)
 You can also place soft-links to the executables in a directory already in
 the PATH. (remark: The executable itself needs to stay in the application
-directory to find it's dependencies)
+directory to find it's dependencies), e.g.
+'''
+cd ~/bin
+ln -s scywalker-0.108.0-linux-x86_64/scywalker .
+ln -s scywalker-0.108.0-linux-x86_64/scywalker_makerefdir .
+ln -s scywalker-0.108.0-linux-x86_64/cg .
+'''
 
 Reference data
 --------------
@@ -151,11 +157,19 @@ data set would be
 
 For example, You can download a demo/test data set and run it using
 ```
-wget scywalker_demo.tar.gz
-tar xvzf scywalker_demo.tar.gz
-cd scywalker_demo
+# download and unpack test data
+wget https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker_test.tar.gz
+tar xvzf scywalker_test.tar.gz
+
+cd scywalker_test
+# make refdir; This test data is limited to chromosome 17, so there are no organelles included
 scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
-scywalker -stack 1 -v 2 -d 8 \
+
+# run scywalker using 8 cores on local machine
+# Of course we cannot properly determine celltypes on this limited data set.
+# The "marker" genes in the included markers_chr17.tsv are not good
+# markers, they are just made to allow celltyping to at least run on this specific limited dataset
+scywalker -v 1 -d 8 \
 	-refdir g17 \
 	-sc_expectedcells 183 \
 	-cellmarkerfile markers_chr17.tsv \
@@ -207,6 +221,13 @@ Some options influence **distribution** (besides `-d` and other [joboptions](htt
     before processing.
 
 Various **other options** are
+
+`-v`
+    default 0, increase (up to 2) to increase the verbosity level, i.e. how much information 
+    starting up jobs, dependencies, etc. is displayed
+
+`-stack`
+    set to 1 (default 0) to show an extended stack trace on error (mainly for debugging)
 
 `-aligners`
     The default aligner is minimap2_splice (minimap2 with the splice preset). You could (experimentally)
