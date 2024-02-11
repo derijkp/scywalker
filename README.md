@@ -53,12 +53,17 @@ or by placing the directory in the PATH environment variable (e.g. using
 You can also place soft-links to the executables in a directory already in
 the PATH. (remark: The executable itself needs to stay in the application
 directory to find it's dependencies), e.g.
-'''
+```
 cd ~/bin
 ln -s scywalker-0.108.0-linux-x86_64/scywalker .
 ln -s scywalker-0.108.0-linux-x86_64/scywalker_makerefdir .
 ln -s scywalker-0.108.0-linux-x86_64/cg .
-'''
+```
+
+Scywalker is largely implemented within [genomecomb](https://github.com/derijkp/genomecomb), 
+and its distribution comes with an appropriate full version of genomecomb,
+which can be run using the cg executable, providing  which also provides
+multiple usefull extra tools for querying tsv files, etc.
 
 Reference data
 --------------
