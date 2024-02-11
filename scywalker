@@ -60,6 +60,12 @@ proc scywalkerenv {} {
 	return $scywalkerdir
 }
 
+proc scywalker_help {} {
+	lappend ::auto_path $::scywalkerdir/apps/cg/lib
+	set help [file_read $::scywalkerdir/README.md]
+	help scywalker md $help
+}
+
 scywalkerenv
 
 # generic help on no args
@@ -70,6 +76,10 @@ if {[llength $argv] < 1} {
 
 proc scywalker {args} {
 	set dir [lindex $args end]
+	if {$dir eq "help" && ![file exists $dir]} {
+		scywalker_help
+		return
+	}
 	set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
 	if {[file exists $dir/samples]} {
 		exec cg process_project \
