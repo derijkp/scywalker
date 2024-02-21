@@ -35,13 +35,13 @@ needed depencies compiled in a way that they should work on all (except very
 ancient) Linux systems.
 
 Installation of the package is as simple as downloading the
-[distribution](https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz)
+[distribution](https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz)
 from github
 ([https://github.com/derijkp/scywalker](https://github.com/derijkp/scywalker))
 and unpacking it, e.g.: 
 ```
 cd ~/bin
-wget https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz
 tar xvzf scywalker-0.108.0-linux-x86_64.tar.gz
 rm scywalker-0.108.0-linux-x86_64.tar.gz
 ```
@@ -70,7 +70,7 @@ Example/test run
 As an example/test, the following code shows you how to download an example data set and run scywalker on it:
 ```
 # download and unpack test data
-wget https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker_test.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz
 tar xvzf scywalker_test.tar.gz
 
 cd scywalker_test
