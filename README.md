@@ -65,6 +65,31 @@ and its distribution comes with an appropriate full version of genomecomb,
 which can be run using the cg executable, providing  which also provides
 multiple usefull extra tools for querying tsv files, etc.
 
+Example/test run
+----------------
+As an example/test, the following code shows you how to download an example data set and run scywalker on it:
+```
+# download and unpack test data
+wget https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker_test.tar.gz
+tar xvzf scywalker_test.tar.gz
+
+cd scywalker_test
+# make refdir; This test data is limited to chromosome 17, so there are no organelles included
+scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
+
+# run scywalker using 8 cores on local machine, adapt this number to what you have available 
+# on your machine (or use e.g. sge to run on a grid engine cluster)
+# Of course we cannot properly determine celltypes on this limited data set.
+# The "marker" genes in the included markers_chr17.tsv are not good
+# markers, they are just made to allow celltyping to at least run on this specific limited dataset
+scywalker -v 1 -d 8 \
+	-refdir g17 \
+	-sc_expectedcells 183 \
+	-cellmarkerfile markers_chr17.tsv \
+	-threads 6 \
+	test10x
+```
+
 Reference data
 --------------
 A scywalker analysis needs a reference genome and a set of known isoforms
@@ -86,7 +111,6 @@ where
 * `genomesequence.fasta` is a multifasta file with the genomesequence and transcripts.gtf
 * `transcripts.gtf` is a gtf file with transcripts for the given genome sequence. It is also possible
 to give a (genomecomb) gene tsv file here.
-
 
 Sample data
 -----------
@@ -160,28 +184,6 @@ data set would be
     More information on options for distribution options can be found in the
     [genomecomb joboptions help](https://derijkp.github.io/genomecomb/joboptions.html)
 
-For example, You can download a demo/test data set and run it using
-```
-# download and unpack test data
-wget https://github.com/derijkp/scywalker/releases/download/0.108.0/scywalker_test.tar.gz
-tar xvzf scywalker_test.tar.gz
-
-cd scywalker_test
-# make refdir; This test data is limited to chromosome 17, so there are no organelles included
-scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
-
-# run scywalker using 8 cores on local machine
-# Of course we cannot properly determine celltypes on this limited data set.
-# The "marker" genes in the included markers_chr17.tsv are not good
-# markers, they are just made to allow celltyping to at least run on this specific limited dataset
-scywalker -v 1 -d 8 \
-	-refdir g17 \
-	-sc_expectedcells 183 \
-	-cellmarkerfile markers_chr17.tsv \
-	-threads 6 \
-	test10x
-```
-
 Other options
 -------------
 Scywalker defaults to analysis of the 10x v3 protocol. 
@@ -246,18 +248,11 @@ following the genomecomb naming conventions (what-methods-samplename.extension).
 Result files are often tab separated files that are zstandard
 (http://facebook.github.io/zstd/) compressed (extension .zst)
 
-genomecomb (included, using the cg command) provides several tools to
-analyse tsv files (that transparantly handles compression), e.g. 
-`cg viz file.tsv.zst` can be used to browse and query (compressed) 
-tsv files using a graphical interface, while `cg select` can be used 
-to query on the command-line. (`cg select -h' for help) 
-and `cg zcat` will decompress to stdout.
-
-Compressed tsv files can also be easily read in R using
+Compressed tsv files can also be easily read in e.g. R using
 ```
 data=read.table(pipe("zstdcat file.tsv.zst"), sep="\t",header=T)
 ```
-or if zstdcat is not installed, using genomecomb
+or if zstdcat is not installed, the included genomecomb command for this can be used:
 ```
 data=read.table(pipe("cg zcat file.tsv.zst"), sep="\t",header=T)
 ```
@@ -390,6 +385,60 @@ like `<count_type>-<celltype>-scsorter-isoquant_sc-sminimap2_splice-<sample>`), 
 
 Novel genes with slightly different ends are similarly matched as isoforms.
 
+Tools
+-----
+The version of genomecomb included in the scywalker distribution
+provides many tools useful for analysis of scywalker results.
+You can call these using `cg toolname ...` or `sw toolname ...` if you want
+to specifically use the scywalker version. You can get an overview
+of all tools in genomecomb using
+```
+cg help
+```
+and help on specific tools using
+```
+cg toolname -h
+```
+Following tools are typically useful for scywalker analysis:
+
+```
+cg viz_transcripts ?options? isoform_counts_file gene output_file
+```
+[viz_transcripts](https://derijkp.github.io/genomecomb/cg_viz_transcripts.html)
+can be used to create a visual presentation of isoform usage of a given gene. get more help
+
+```
+cg sc_pseudobulk scgenefile scisoformfile groupfile
+```
+[sc_pseudobulk](https://derijkp.github.io/genomecomb/cg_sc_pseudobulk.html)
+make pseudobulk files of sc_gene and sc_transcript files based on an sc_group file
+
+```
+cg multitranscript ?options? multitranscriptfile transcriptfile transcriptfile ?transcriptfile? ...
+```
+[multitranscript](https://derijkp.github.io/genomecomb/cg_multitranscript.html)
+can be used to combine separate per sample transcript files in one multisample transcript file
+
+```
+cg viz file.tsv
+```
+The [viz](https://derijkp.github.io/genomecomb/cg_viz.html) tool
+can be used to browse and query (compressed) tsv result files using a graphical interface
+
+```
+cg select ?options? ?datafile? ?outfile?
+```
+Using the [select](https://derijkp.github.io/genomecomb/cg_select.html) tool,
+you can query the tsv result files on the command-line
+
+```
+cg zcat file ...
+```
+[zcat](https://derijkp.github.io/genomecomb/cg_zcat.html)
+will concatenate (potentially compressed) files to standard output. It differs from
+normal zcat in that it supports multiple compression types (based on the
+file extension) including zstandard (.gz .zst .lz4 .rz .bz2)
+
 License
 -------
 The use of this application is governed by the GPL (license.txt).
@@ -405,3 +454,4 @@ B-2610 Antwerpen, Belgium
 
 tel.: +32-03-265.10.40
 E-mail: Peter.DeRijk@uantwerpen.vib.be
+
