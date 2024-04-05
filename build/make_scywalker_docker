@@ -1,0 +1,39 @@
+#!/bin/sh
+
+builddir=$HOME/build
+version=0.108.0
+
+srcdir=$HOME/dev/scywalker
+swbin=$builddir/scywalker-$version-docker
+
+cd $builddir
+rm -rf $swbin.old || true
+mv $swbin $swbin.old || true
+mkdir -p $swbin
+
+cd $swbin
+cp $srcdir/build/Dockerfile .
+docker build -t scywalker:$version .
+
+exit
+
+# example test
+
+cd $HOME/test
+rm -rf scywalker_test
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz \
+  && tar xvzf scywalker_test.tar.gz \
+  && rm -f scywalker_test.tar.gz
+
+cd $HOME/test/scywalker_test
+
+docker run -v `pwd`:/data --workdir /data -u `id -u`:`id -g` scywalker:$version \
+    scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
+
+docker run -v `pwd`:/data --workdir /data -u `id -u`:`id -g` scywalker:$version \
+    scywalker -v 1 -d 8 \
+        -refdir g17 \
+        -sc_expectedcells 183 \
+        -cellmarkerfile markers_chr17.tsv \
+        -threads 6 \
+        test10x
