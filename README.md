@@ -128,6 +128,18 @@ in the run. On analysis of a projectdir, all samples are analysed
 individually, and files providing comparisons of multiple samples will be
 made in a subdirectory compar.
 
+The starting project directory should look thus like:
+
+* project_directory/
+  * sample1/
+    * fastq/
+      * file1.fq.gz
+      * file2.fq.gz
+  * sample2/
+    * fastq/
+      * file1.fq.gz
+      * file2.fq.gz
+
 Running scywalker
 -----------------
 You can run scywalker using the following command
