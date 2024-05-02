@@ -76,7 +76,7 @@ if {[llength $argv] < 1} {
 
 proc scywalker {args} {
 	set dir [lindex $args end]
-	if {$dir eq "help" && ![file exists $dir]} {
+	if {$dir eq "help"} {
 		scywalker_help
 		return
 	}
@@ -85,6 +85,8 @@ proc scywalker {args} {
 		exec cg process_project \
 			-preset scywalker -sc_whitelist $whitelist \
 			{*}$args >@ stdout 2>@ stderr
+	} elseif {![file exists $dir/fastq]} {
+		error "The given directory $dir has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"
 	} else {
 		exec cg process_sample \
 			-preset scywalker -sc_whitelist $whitelist \
