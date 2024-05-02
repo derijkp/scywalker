@@ -103,6 +103,9 @@ documentation](https://derijkp.github.io/genomecomb/install.html)
 
 You can also use the included command scywalker_makerefdir to make a reference
 directory starting from a fasta and a gtf transcript file.
+If there are organelles in the genome sequence, it is important to specify them so the organelle
+specific algorithm can be used: The isoquant based code often hangs or crashes on the
+very different organelle data.
 ```
 scywalker_makerefdir -organelles organelleslist refdir genomesequence.fasta transcripts.gtf
 ```
