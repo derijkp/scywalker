@@ -75,6 +75,7 @@ tar xvzf scywalker_test.tar.gz
 
 cd scywalker_test
 # make refdir; This test data is limited to chromosome 17, so there are no organelles included
+# The command will accept compressed source fasta and gtf files (.gz, .zst, ..)
 scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
 
 # run scywalker using 8 cores on local machine, adapt this number to what you have available 
