@@ -118,19 +118,19 @@ to give a (genomecomb) gene tsv file here.
 
 Sample data
 -----------
-You provide sample data to scywalker in the form of a **sample directory**:
-This is a directory that has (at least) a subdirectory named fastq. This
-fastq directory must contain the fastq files (or softlinks to them) The
+Scywalker works on data coming in the form of a **project** or **sample directory**:
+A **sample directory** is a directory that has (at least) a subdirectory named fastq. This
+fastq directory must contain the fastq files (or softlinks to them). The
 sample name is determined by the name of the sample directory. Results of the
 analysis specific for the sample will be added in this directory
 
-scywalker can analyse multiple samples in one run by providing it a
-**project directory**. This is a directory (name of the dir determines the
-name of the run/project) that at least contains a subdirectory named
-samples. This samples subdir contains a sample directory from each sample
-in the run. On analysis of a projectdir, all samples are analysed
-individually, and files providing comparisons of multiple samples will be
-made in a subdirectory compar.
+A **project directory** can be used to analyse multiple samples in one run. 
+This is a directory (name of the dir determines the name of the
+run/project) that at least contains a subdirectory named samples. This
+samples subdir contains a sample directory from each sample in the run. On
+analysis of a projectdir, all samples are analysed individually, and files
+providing comparisons of multiple samples will be made in a subdirectory
+compar.
 
 The starting project directory should look thus like:
 
@@ -143,6 +143,42 @@ The starting project directory should look thus like:
     * fastq/
       * file1.fq.gz
       * file2.fq.gz
+
+Sample data using a samplesheet
+-------------------------------
+You can also provide a samplesheet using the -samplesheet option to create
+a new project directory based on the data in the samplesheet. 
+The **samplesheet** is a tab-separated value file with at least the fields
+"sample" and "seqfiles" (The command will also recognize fieldnames
+"fastq" or "fastqs" instead of "seqfiles")
+
+For each in the samplesheet line the sample (name given by the field
+"sample") will be created in the directory ```<projectdir>/samples```.
+seqfiles gives the
+location of sequencing data files in fastq or ubam format that will be
+added to the sample. The value can be the path to a specific file, a
+directory (containing the sequencing files), or a (glob) pattern matching
+one or more sequencing files (e.g. data/sample1_*.fastq.gz) The data files
+are (by default) soflinked in the directory ```<projectdir>/samples/<samplename>/fastq```
+ for fastq files (extension .fastq, .fq, .fastq.gz, or .fq.gz), and in
+```<projectdir>/samples/<samplename>/ubam``` for unaligned bam files
+(extension .bam)
+
+You can have more than one line for the same sample, possibly merging
+sequencing data from different sources into one sample. (You can not mix
+fastq and ubam sources this way; if both a fastq and ubam directory are
+present, only the ubam will be used for analysis)
+
+The extra fields in the samplesheet (if not empty) are added to the projects
+options.tsv file, which allows you to set specific analysis options for each
+sample, e.g. the samplesheet
+{{{
+sample	seqfiles	sc_expectedcells
+sample1	sample1/*.fastq.gz	2000
+sample2	sample2/*.fastq.gz	10000
+}}}
+will setup a projectdir where sample1 will be analysed using 2000 expected
+cells, whereas for sample2 10000 are expected.
 
 Running scywalker
 -----------------
@@ -178,6 +214,11 @@ data set would be
     **tissue**: can be used in combination with the -tissue option; only markers of the given tissue will be used
     **markertype**: is the marker expressed "up" or not expressed "down" in celltype (only used by sctype currently)
     **weight**: weight of the marker (only used by sctype currently)
+
+`-samplesheet`
+    A tsv file providing the samples to be analysed with where there raw data is found. If given,
+    the project directory will be automatically created (or added to) based on
+    this data (see "Sample data using a samplesheet")
 
 `-tissue`
     The tissue type of the sample. If cellmarkerfile is given, only markers of the given tissue are used.
