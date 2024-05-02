@@ -401,6 +401,32 @@ like `<count_type>-<celltype>-scsorter-isoquant_sc-sminimap2_splice-<sample>`), 
 
 Novel genes with slightly different ends are similarly matched as isoforms.
 
+Troubleshooting
+---------------
+Errors in the submission command (e.g. the given reference dir does not exists)
+are returned immediately. You can get more extensive information on such errors
+by adding the -stack 1 option (and possible the optiuon -v 2)
+When running distributed (option -d with sge, slurm, or a number of cores), scywalker
+can also encounter errors in the submitted jobs. Information on submitted jobs is
+gathered in a directory log_jobs (files per job) and in a tsv log file name typically named
+process_*.<ext>, where <ext> can be
+* **submitting** when not all jobs are submitted yet
+* **running** when the submission command is finished, but some jobs are still running (e.g. on cluster)
+* **finished** on successful completion (when all jobs are ready and there were no errors, the log_jobs directory is deleted)
+* **error** when all jobs are ready, but some had errors
+
+When there was an error in one job, all jobs that depend on results of that job will also have errors
+(dependencies that are not found), so you typically want to look for the first error. You can do
+this by checking/querying the (tsv) log file. The convenience function error_report can be used to get a
+more nicely formatted overview of the errors (if you do not specify the
+logfile, it will take the most recent one in the current working
+directory):
+```
+cg error_report ?logfile?
+```
+In this you can check the error messages, time run, etc.
+With the **runfile** given in this output, you can try to run specific jobs separately
+
 Tools
 -----
 The version of genomecomb included in the scywalker distribution
