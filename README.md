@@ -35,19 +35,19 @@ needed depencies compiled in a way that they should work on all (except very
 ancient) Linux systems.
 
 Installation of the package is as simple as downloading the
-[distribution](https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz)
+[distribution](https://github.com/derijkp/scywalker/releases/download/0.109.0/scywalker-0.109.0-linux-x86_64.tar.gz)
 from github
 ([https://github.com/derijkp/scywalker](https://github.com/derijkp/scywalker))
 and unpacking it, e.g.: 
 ```
 cd ~/bin
-wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker-0.108.0-linux-x86_64.tar.gz
-tar xvzf scywalker-0.108.0-linux-x86_64.tar.gz
-rm scywalker-0.108.0-linux-x86_64.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/0.109.0/scywalker-0.109.0-linux-x86_64.tar.gz
+tar xvzf scywalker-0.109.0-linux-x86_64.tar.gz
+rm scywalker-0.109.0-linux-x86_64.tar.gz
 ```
 
 You can call the executables (scywalker, cg) directly from the directory
-using the path (e.g. `~/bin/scywalker-0.108.0-linux-x86_64/scywalker ..`) 
+using the path (e.g. `~/bin/scywalker-0.109.0-linux-x86_64/scywalker ..`) 
 or by placing the directory in the PATH environment variable (e.g. using 
 `export PATH=~/bin/:$PATH`)
 You can also place soft-links to the executables in a directory already in
@@ -55,9 +55,9 @@ the PATH. (remark: The executable itself needs to stay in the application
 directory to find it's dependencies), e.g.
 ```
 cd ~/bin
-ln -s scywalker-0.108.0-linux-x86_64/scywalker .
-ln -s scywalker-0.108.0-linux-x86_64/scywalker_makerefdir .
-ln -s scywalker-0.108.0-linux-x86_64/cg .
+ln -s scywalker-0.109.0-linux-x86_64/scywalker .
+ln -s scywalker-0.109.0-linux-x86_64/scywalker_makerefdir .
+ln -s scywalker-0.109.0-linux-x86_64/cg .
 ```
 
 Scywalker is largely implemented within [genomecomb](https://github.com/derijkp/genomecomb), 
@@ -70,7 +70,7 @@ Example/test run
 As an example/test, the following code shows you how to download an example data set and run scywalker on it:
 ```
 # download and unpack test data
-wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/v0.109.0/scywalker_test.tar.gz
 tar xvzf scywalker_test.tar.gz
 
 cd scywalker_test
@@ -249,7 +249,7 @@ The following settings influence how **barcodes and UMIs** are found, and some c
 `-sc_whitelist`
     Used to provide a file with all possible correct barcodes. You should
     specify a different whitelist for 10x v2 using (e.g.) 
-    `-sc_whitelist ~/bin/scywalker-0.108.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
+    `-sc_whitelist ~/bin/scywalker-0.109.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
 
 `-sc_umisize`
     The default UMI size is 12 (v3). 10 v2 has a smaller UMI of 10; you can specify this using 

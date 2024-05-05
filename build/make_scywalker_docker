@@ -1,7 +1,7 @@
 #!/bin/sh
 
 builddir=$HOME/build
-version=0.108.0
+version=0.109.0
 
 srcdir=$HOME/dev/scywalker
 swbin=$builddir/scywalker-$version-docker
@@ -21,7 +21,7 @@ exit
 
 cd $HOME/test
 rm -rf scywalker_test
-wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz \
+wget https://github.com/derijkp/scywalker/releases/download/v0.109.0/scywalker_test.tar.gz \
   && tar xvzf scywalker_test.tar.gz \
   && rm -f scywalker_test.tar.gz
 
