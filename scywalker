@@ -81,12 +81,26 @@ proc scywalker {args} {
 		return
 	}
 	set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
+	if {![file exists /usr/bin/which]} {
+		puts stderr "The command \"which\" is not installed in /usr/bin, which is required (and could not be circumvented) by the R tools used by scywalker."
+		puts stderr "Please install the which package before running scywalker, e.g. on a centos system you can do this using:"
+		puts stderr "yum install -y which"
+		exit 1
+	}
+	if {![file exists /etc/fonts/fonts.conf]} {
+		puts stderr "fonts are not configured (/etc/fonts/fonts.conf does not exist) on this system."
+		puts stderr "However this is required by the R tools used by scywalker."
+		puts stderr "Please install the fontconfig package before running scywalker, e.g. on a centos system you can do this using:"
+		puts stderr "yum install -y fontconfig"
+		exit 1
+	}
 	if {[file exists $dir/samples]} {
 		exec cg process_project \
 			-preset scywalker -sc_whitelist $whitelist \
 			{*}$args >@ stdout 2>@ stderr
 	} elseif {![file exists $dir/fastq]} {
-		error "The given directory $dir has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"
+		puts stderr "The given directory \"$dir\" has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"
+		exit 1
 	} else {
 		exec cg process_sample \
 			-preset scywalker -sc_whitelist $whitelist \
