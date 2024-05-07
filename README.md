@@ -70,7 +70,7 @@ Example/test run
 As an example/test, the following code shows you how to download an example data set and run scywalker on it:
 ```
 # download and unpack test data
-wget https://github.com/derijkp/scywalker/releases/download/v0.109.0/scywalker_test.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz
 tar xvzf scywalker_test.tar.gz
 
 cd scywalker_test
