@@ -97,12 +97,7 @@ A scywalker analysis needs a reference genome and a set of known isoforms
 in a specific format, with different types of indexes and supporting
 files. These must be provided in a reference directory.
 
-You can use genomecomb reference directories for this; These can be downloaded from
-the genomecomb website for a number of species (or created new) as
-described in the [genomecomb installation
-documentation](https://derijkp.github.io/genomecomb/install.html)
-
-You can also use the included command scywalker_makerefdir to make a reference
+You can use the included command scywalker_makerefdir to make a reference
 directory starting from a fasta and a gtf transcript file.
 If there are organelles in the genome sequence, it is important to specify them so the organelle
 specific algorithm can be used: The isoquant based code often hangs or crashes on the
@@ -115,6 +110,19 @@ where
 * `genomesequence.fasta` is a multifasta file with the genomesequence and transcripts.gtf
 * `transcripts.gtf` is a gtf file with transcripts for the given genome sequence. It is also possible
 to give a (genomecomb) gene tsv file here.
+
+You can also use genomecomb reference directories for this; These can be downloaded from
+the genomecomb website for a number of species (or created new) as
+described in the [genomecomb installation
+documentation](https://derijkp.github.io/genomecomb/install.html). 
+
+When downloadinga reference, be sure to also download and install the matching minimap2 indexes, e.g.
+```
+wget https://genomecomb.bioinf.be/download/refdb_hg38-0.109.0.tar.gz
+tar xvzf refdb_hg38-0.109.0.tar.gz
+wget https://genomecomb.bioinf.be/download/refdb_hg38-minimap2-0.109.0.tar.gz
+tar xvzf refdb_hg38-minimap2-0.109.0.tar.gz
+```
 
 Sample data
 -----------
