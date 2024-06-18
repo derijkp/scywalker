@@ -18,10 +18,11 @@ docker build -t scywalker:$version .
 exit
 
 # example test
+# ------------
 
 cd $HOME/test
 rm -rf scywalker_test
-wget https://github.com/derijkp/scywalker/releases/download/v0.109.0/scywalker_test.tar.gz \
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz \
   && tar xvzf scywalker_test.tar.gz \
   && rm -f scywalker_test.tar.gz
 
@@ -37,3 +38,30 @@ docker run -v `pwd`:/data --workdir /data -u `id -u`:`id -g` scywalker:$version 
         -cellmarkerfile markers_chr17.tsv \
         -threads 6 \
         test10x
+
+# example test singularity
+# ------------------------
+
+cd $HOME/test
+rm -rf scywalker_test
+wget https://github.com/derijkp/scywalker/releases/download/v0.108.0/scywalker_test.tar.gz \
+  && tar xvzf scywalker_test.tar.gz \
+  && rm -f scywalker_test.tar.gz
+
+cd $HOME/test/scywalker_test
+
+# build singularity image
+docker save scywalker:$version -o scywalker-$version-docker.tar
+singularity build scywalker-$version.sif docker-archive:scywalker-$version-docker.tar
+
+
+singularity exec scywalker-$version.sif \
+    scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
+
+singularity exec scywalker-$version.sif scywalker -v 1 -d 8 \
+	-refdir g17 \
+	-sc_expectedcells 183 \
+	-cellmarkerfile markers_chr17.tsv \
+	-threads 6 \
+	test10x
+
