@@ -274,9 +274,14 @@ Scywalker defaults to analysis of the 10x v3 protocol.
 The following settings influence how **barcodes and UMIs** are found, and some can be used to analyse 10x v2
 
 `-sc_whitelist`
-    Used to provide a file with all possible correct barcodes. You should
-    specify a different whitelist for 10x v2 using (e.g.) 
+    Used to provide a file with all possible correct barcodes. By default the whitelist with the 10x version 3
+    barcodes is used. You can specify to use version 2 of the whitelist by using the shortcut
+    `-sc_whitelist v2`
+    or specify a different whitelist by giving a file containing the barcodes, e.g. for 10x v2 using
     `-sc_whitelist ~/bin/scywalker-0.109.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
+    You can also choose to not use a whitelist by specifying an empty for the option using
+    `-sc_whitelist ''`
+
 
 `-sc_umisize`
     The default UMI size is 12 (v3). 10 v2 has a smaller UMI of 10; you can specify this using 

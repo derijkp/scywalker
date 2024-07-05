@@ -96,6 +96,17 @@ proc scywalker {args} {
 				error "wrong value \"$value\" given for scywalker -preset, must be one of: ont, pacbio"
 			}
 			lappend remove $pos [expr {$pos + 1}]
+		} elseif {$key eq "-sc_whitelist"} {
+			if {$value in "10Xv3 v3"} {
+				set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
+			} elseif {$value in "10Xv2 v2"} {
+				set whitelist $::scywalkerdir/whitelists/737K-august-2016.txt.gz
+			} elseif {[file exists $value]} {
+				set whitelist $value
+			} else {
+				error "given -sc_whitelist file \"$value\" does not exist, must be an existing file or one of: v3, v2"
+			}
+			lappend remove $pos [expr {$pos + 1}]
 		}
 		incr pos 2
 	}
