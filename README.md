@@ -124,6 +124,17 @@ wget https://genomecomb.bioinf.be/download/refdb_hg38-minimap2-0.109.0.tar.gz
 tar xvzf refdb_hg38-minimap2-0.109.0.tar.gz
 ```
 
+### Chromosome grouping
+When distributing over chromosomes (or regions), by default alt and
+unplaced chromosomes (usually small) are grouped together. This default
+relies on the fact that these (often) contain a "_", and so, e.g.
+chr1_KI270706v1_random, chr1_KI270707v1_random are grouped under chr1_.
+For genomes where this pattern is not good, the scywalker_makerefdir
+command supports the option `-groupchromosomes` to specify a different way
+of grouping: Each chromosome is matched to the given list of regular
+expressions, and if it matches one the chromosome is assigned to a group
+named after the match.
+
 Sample data
 -----------
 Scywalker works on data coming in the form of a **project** or **sample directory**:

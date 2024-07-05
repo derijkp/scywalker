@@ -101,6 +101,7 @@ proc scywalker_makerefdir {args} {
 	set organelles {}
 	set transcripts {}
 	set nolowgenecutoff 200000
+	set groupchromosomes {}
 	set pos 0
 	foreach {key value} $args {
 		switch $key {
@@ -110,6 +111,10 @@ proc scywalker_makerefdir {args} {
 			}
 			-nolowgenecutoff {
 				set nolowgenecutoff $value
+				incr pos 2
+			}
+			-groupchromosomes {
+				set groupchromosomes $value
 				incr pos 2
 			}
 			default break
@@ -140,6 +145,12 @@ proc scywalker_makerefdir {args} {
 	puts "Making genome $result"
 	exec cg fas2ifas $genomefasta $result
 	exec samtools faidx $result
+
+	# groupchromosomes
+	if {$groupchromosomes ne ""} {
+		puts "Making genome $result.groupchromosomes"
+		groupchromosomes $result $groupchromosomes
+	}
 
 	# fullgenome
 	unset -nocomplain a
