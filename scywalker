@@ -75,12 +75,36 @@ if {[llength $argv] < 1} {
 }
 
 proc scywalker {args} {
+	set remove {}
+	set pos 0
+	set options {}
+	set preset scywalker
+	set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
+	foreach {key value} $args {
+		if {[string index $key 0] ne "-"} {
+			break
+		} elseif {$key eq "--"} {
+			break
+		}
+		regsub ^-- $key - key
+		if {$key eq "-preset"} {
+			if {$value in "pacbio"} {
+				set preset scywalker_pacbio
+			} elseif {$value in "ont"} {
+				set preset scywalker
+			} else {
+				error "wrong value \"$value\" given for scywalker -preset, must be one of: ont, pacbio"
+			}
+			lappend remove $pos [expr {$pos + 1}]
+		}
+		incr pos 2
+	}
+	if {[llength $remove]} {set args [list_sub $args -exclude $remove]}
 	set dir [lindex $args end]
 	if {$dir eq "help"} {
 		scywalker_help
 		return
 	}
-	set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
 	if {![file exists /usr/bin/which]} {
 		puts stderr "The command \"which\" is not installed in /usr/bin, which is required (and could not be circumvented) by the R tools used by scywalker."
 		puts stderr "Please install the which package before running scywalker, e.g. on a centos system you can do this using:"
@@ -96,7 +120,7 @@ proc scywalker {args} {
 	}
 	if {[file exists $dir/samples]} {
 		exec cg process_project \
-			-preset scywalker -sc_whitelist $whitelist \
+			-preset $preset -sc_whitelist $whitelist \
 			{*}$args >@ stdout 2>@ stderr
 	} elseif {![file exists $dir/fastq]} {
 		puts stderr "The given directory \"$dir\" has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"

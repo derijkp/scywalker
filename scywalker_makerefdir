@@ -97,10 +97,11 @@ if {[llength $argv] < 1} {
 	formaterror
 }
 
-
 proc scywalker_makerefdir {args} {
 	set organelles {}
 	set transcripts {}
+	set ontindex 1
+	set pacbioindex 0
 	set nolowgenecutoff 200000
 	set groupchromosomes {}
 	set pos 0
@@ -116,6 +117,14 @@ proc scywalker_makerefdir {args} {
 			}
 			-groupchromosomes {
 				set groupchromosomes $value
+				incr pos 2
+			}
+			-ontindex {
+				set ontindex $value
+				incr pos 2
+			}
+			-pacbioindex {
+				set pacbioindex $value
 				incr pos 2
 			}
 			default break
@@ -187,9 +196,17 @@ proc scywalker_makerefdir {args} {
 	exec cg calcsequencedgenome --stack 1 $result | cg zst > $target.temp
 	file rename -force -- $target.temp $target
 
-	# minimap2_splice index
-	puts "Making minimap2 index (can take large amount of memory)"
-	exec cg refseq_minimap2 $result splice
+	if {$ontindex} {
+		# minimap2_splice index
+		puts "Making minimap2 ont index (can take large amount of memory)"
+		exec cg refseq_minimap2 $result splice
+	}
+
+	if {$pacbioindex} {
+		# minimap2_splice index
+		puts "Making minimap2 pacbio index (can take large amount of memory)"
+		exec cg refseq_minimap2 $result:hq splice
+	}
 
 	set target $refdir/genome_${build}.dict
 	exec samtools dict -o $target.temp $result

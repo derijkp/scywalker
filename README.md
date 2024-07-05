@@ -6,7 +6,8 @@ Copyright VIB and University of Antwerp
 Scywalker
 -------
 scywalker is a package designed to analyse single cell (10x) Oxford
-nanopore long read data. (without the need for matching short read data).
+nanopore long read data (without the need for matching short read data),
+but it can also analyse PacBio data with the appropriate options.
 It provides end-to-end analysis in one command: Starting from fastqs, it
 will find and assign cellbarcodes, align reads, and reconstruct (based on
 [IsoQuant](https://github.com/ablab/IsoQuant)) and quantify isoforms and
@@ -123,6 +124,10 @@ tar xvzf refdb_hg38-0.109.0.tar.gz
 wget https://genomecomb.bioinf.be/download/refdb_hg38-minimap2-0.109.0.tar.gz
 tar xvzf refdb_hg38-minimap2-0.109.0.tar.gz
 ```
+### PacBio indexes
+By default scywalker_makerefdir will only create an ont minimap2 index for the genome.
+If you want to analyze PacBio data, the appropriate index can be added by giving the 
+option '-pacbioindex 1' to scywalker_makerefdir
 
 ### Chromosome grouping
 When distributing over chromosomes (or regions), by default alt and
@@ -243,6 +248,9 @@ data set would be
     The tissue type of the sample. If cellmarkerfile is given, only markers of the given tissue are used.
     If cellmarkerfile is not given, scsorter is not run; however sctype will use its internal database 
     with the given tissue. If neither is given, no celltyping or pseudobulk generation is done.
+
+`-preset`
+    You can set this to `pacbio` for analyzing Pacific Biosciences long reads data, or to `ont` (default) for the analysis of Oxford nanopore data. 
 
 `-d`
     By default the command is run using a single core (=slow). Use the `-d` option to specify the
