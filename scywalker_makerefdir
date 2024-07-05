@@ -12,7 +12,7 @@ exec tclsh "$0" ${1+"$@"}
 set script [file join [pwd] [info script]]
 set scriptname [file tail $script]
 while 1 {
-	if {[catch {set script [file join [pwd] [file readlink $script]]}]} break
+	if {[catch {set script [file join [file dir $script] [file readlink $script]]}]} break
 }
 
 set appdir [file dir $script]
@@ -31,7 +31,7 @@ proc pathsep {} {
 proc scywalkerenv {} {
 	global auto_path env appdir tcl_dirtcl scywalkerdir externdir
 	if {![info exists appdir]} {
-		set appdir ${scywalker::dir}
+		set appdir ${scywalkerdir}
 	}
 	if {[file dir [file dir $appdir]] eq [get tcl_dirtcl ""]} {
 		# we are being run from a dirtcl installation in apps/scywalker
@@ -59,6 +59,7 @@ proc scywalkerenv {} {
 	} else {
 		set env(LD_LIBRARY_PATH) $::externdir/lib
 	}
+	lappend auto_path $scywalkerdir/apps/cg/lib
 	return $scywalkerdir
 }
 
