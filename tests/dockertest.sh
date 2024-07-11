@@ -39,7 +39,7 @@ if [ ! -f /io/tests/dockertest.sh ]; then
 	echo "Running script $dir/$file"
 	testdir=""
 	bindir=""
-	image=centos:7
+	image=almalinux:8
 	arch=linux-x86_64
 	argumentspos=1; 
 	while [[ "$#" -gt 0 ]]; do case $1 in
@@ -93,13 +93,25 @@ if [ "$1" = "stage2" ] ; then
 	bindir=$8
 	image=$9
 	echo "preparing user test with uid=$uid and gid=$gid"
+#	if [[ "$image" =~ centos || "$image" =~ alma ]] ; then
+#		microdnf install yum
+#		yum install shadow-utils -y
+#		yum install -y sudo
+#	fi
 	groupadd test --gid $gid
 	useradd test -m --uid $uid --gid $gid
 	# prepare the user test with sudo rights
-	if [[ "$image" =~ centos ]] ; then
+	if [[ "$image" =~ almalinux ]] ; then
+		echo "installing sudo ($image)"
+		if ! rpm --quiet --query sudo; then
+			yum install -q -y sudo
+		fi
+		# usermod -a -G wheel test
+		echo "test ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-test
+	elif [[ "$image" =~ centos ]] ; then
 		echo "installing sudo ($image)"
 		# to stop "checksum is invalid" errors when using yum in 32 bit docker
-		if [ "$image" =~ linux-ix86 ] ; then
+		if [[ "$image" =~ linux-ix86 ]] ; then
 			if ! rpm --quiet --query yum-plugin-ovl; then
 				yum install -q -y yum-plugin-ovl
 			fi
