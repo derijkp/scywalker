@@ -79,12 +79,13 @@ cd scywalker_test
 # The command will accept compressed source fasta and gtf files (.gz, .zst, ..)
 scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
 
-# run scywalker using 8 cores on local machine, adapt this number to what you have available 
+# run scywalker using 8 cores and 64G of memory on local machine; adapt these numbers to what you have available 
 # on your machine (or use e.g. sge to run on a grid engine cluster)
 # Of course we cannot properly determine celltypes on this limited data set.
 # The "marker" genes in the included markers_chr17.tsv are not good
 # markers, they are just made to allow celltyping to at least run on this specific limited dataset
 scywalker -v 1 -d 8 \
+	-dmaxmem 64G
 	-refdir g17 \
 	-sc_expectedcells 183 \
 	-cellmarkerfile markers_chr17.tsv \
@@ -267,6 +268,12 @@ data set would be
     logfile.
     More information on options for distribution options can be found in the
     [genomecomb joboptions help](https://derijkp.github.io/genomecomb/joboptions.html)
+
+`-dmaxmem`
+    The maximum memory to be used (reserved) when running distributed on a local machine.
+    This will stop only jobs from starting as long as they request more memory than currently 
+    available (based on requested memory by running jobs). Jobs that use more memory than requested
+    will not be stopped by this. This option will have no effect when running on a cluster
 
 Other options
 -------------
