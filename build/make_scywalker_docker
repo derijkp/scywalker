@@ -1,7 +1,7 @@
 #!/bin/sh
 
 builddir=$HOME/build
-version=0.109.0
+version=0.110.0
 
 srcdir=$HOME/dev/scywalker
 swbin=$builddir/scywalker-$version-docker
@@ -33,6 +33,7 @@ docker run -v `pwd`:/data --workdir /data -u `id -u`:`id -g` scywalker:$version 
 
 docker run -v `pwd`:/data --workdir /data -u `id -u`:`id -g` scywalker:$version \
     scywalker -v 1 -d 8 \
+	-dmaxmem 48G \
         -refdir g17 \
         -sc_expectedcells 183 \
         -cellmarkerfile markers_chr17.tsv \
