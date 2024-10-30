@@ -115,6 +115,10 @@ proc scywalker {args} {
 	if {$dir eq "help"} {
 		scywalker_help
 		return
+	} elseif {$dir eq "version"} {
+		set version [exec cg version]
+		puts $version
+		return $version
 	}
 	if {![file exists /usr/bin/which]} {
 		puts stderr "The command \"which\" is not installed in /usr/bin, which is required (and could not be circumvented) by the R tools used by scywalker."
