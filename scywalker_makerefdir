@@ -153,8 +153,8 @@ proc scywalker_makerefdir {args} {
 	# make ifas
 	set result $refdir/genome_$tail.ifas
 	puts "Making genome $result"
-	exec cg fas2ifas $genomefasta $result
-	exec samtools faidx $result
+	catch_exec cg fas2ifas $genomefasta $result
+	catch_exec samtools faidx $result
 
 	# groupchromosomes
 	if {$groupchromosomes ne ""} {
@@ -188,18 +188,18 @@ proc scywalker_makerefdir {args} {
 	}
 
 	# for cram
-	exec cg fasta2cramref $result $result.forcram
+	catch_exec cg fasta2cramref $result $result.forcram
 
 	# sequencedgenome
 	set target $refdir/extra/reg_${build}_sequencedgenome.tsv.zst
 	puts "Making $target"
-	exec cg calcsequencedgenome --stack 1 $result | cg zst > $target.temp
+	catch_exec cg calcsequencedgenome --stack 1 $result | cg zst > $target.temp
 	file rename -force -- $target.temp $target
 
 	if {$ontindex} {
 		# minimap2_splice index
 		puts "Making minimap2 ont index (can take large amount of memory)"
-		exec cg refseq_minimap2 $result splice
+		catch_exec cg refseq_minimap2 $result splice
 	}
 
 	if {$pacbioindex} {
@@ -209,7 +209,7 @@ proc scywalker_makerefdir {args} {
 	}
 
 	set target $refdir/genome_${build}.dict
-	exec samtools dict -o $target.temp $result
+	catch_exec samtools dict -o $target.temp $result
 	file rename $target.temp $target
 
 	# converting transcripts
@@ -220,10 +220,10 @@ proc scywalker_makerefdir {args} {
 	set ext [file extension [gzroot $transcripts]]
 	if {$ext eq ".gtf"} {
 		file copy -force $transcripts [file root $target].gtf
-		exec cg gtf2tsv $transcripts $target
+		catch_exec cg gtf2tsv $transcripts $target
 	} elseif {$ext in ".gff .ggf2 .gff3"} {
 		file copy $transcripts [file root $target]$ext
-		exec cg gff2tsv $transcripts $target
+		catch_exec cg gff2tsv $transcripts $target
 	} elseif {$ext eq ".tsv"} {
 		file copy $transcripts $target
 	} else {
@@ -233,7 +233,7 @@ proc scywalker_makerefdir {args} {
 
 	set target $refdir/extra/reg_${build}_nolowgene200k.tsv.zst
 	puts "Making $target"
-	exec cg distrreg_nolowgene $refdir $nolowgenecutoff
+	catch_exec cg distrreg_nolowgene $refdir $nolowgenecutoff
 
 	puts "Made $refdir (can now be used as refdir for scywalker)"
 }
