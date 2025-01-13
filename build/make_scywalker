@@ -52,6 +52,8 @@ mkdir $swbin/whitelists
 cd $swbin/whitelists
 wget https://teichlab.github.io/scg_lib_structs/data/3M-february-2018.txt.gz
 wget https://teichlab.github.io/scg_lib_structs/data/737K-august-2016.txt.gz
+wget https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-3pgex-may-2023.txt.gz
+wget https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-5pgex-jan-2023.txt.gz
 
 chmod -R ugo+rX $swbin
 

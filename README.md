@@ -85,7 +85,7 @@ scywalker_makerefdir -organelles '' g17 genome.fa genes.gtf
 # The "marker" genes in the included markers_chr17.tsv are not good
 # markers, they are just made to allow celltyping to at least run on this specific limited dataset
 scywalker -v 1 -d 8 \
-	-dmaxmem 64G
+	-dmaxmem 64G \
 	-refdir g17 \
 	-sc_expectedcells 183 \
 	-cellmarkerfile markers_chr17.tsv \
@@ -197,11 +197,11 @@ present, only the ubam will be used for analysis)
 The extra fields in the samplesheet (if not empty) are added to the projects
 options.tsv file, which allows you to set specific analysis options for each
 sample, e.g. the samplesheet
-{{{
+```
 sample	seqfiles	sc_expectedcells
 sample1	sample1/*.fastq.gz	2000
 sample2	sample2/*.fastq.gz	10000
-}}}
+```
 will setup a projectdir where sample1 will be analysed using 2000 expected
 cells, whereas for sample2 10000 are expected.
 
@@ -284,7 +284,8 @@ The following settings influence how **barcodes and UMIs** are found, and some c
     Used to provide a file with all possible correct barcodes. By default the whitelist with the 10x version 3
     barcodes is used. You can specify to use version 2 of the whitelist by using the shortcut
     `-sc_whitelist v2`
-    or specify a different whitelist by giving a file containing the barcodes, e.g. for 10x v2 using
+    Other versions you can use are v4 for the 3' version 4 and p5v3 for the 5' version 3 (for version 2 the 5' whitelist is the same as the 3').
+    You can also specify a different whitelist by giving a file containing the barcodes, e.g. for 10x v2 using
     `-sc_whitelist ~/bin/scywalker-0.110.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
     You can also choose to not use a whitelist by specifying an empty for the option using
     `-sc_whitelist ''`
@@ -380,7 +381,7 @@ sc_gene_counts_filtered-isoquant_sc-sminimap2_splice-sample1.10x
 zstandard compressed, tab separated file with isoform/transcript information and UMI counts per
 isoform/per cell.
 Transcripts are described in fields using the genePred convention as described 
-in the [genomecomb gene/transcipt format](https://derijkp.github.io/genomecomb/format_gene.html).  
+in the [genomecomb gene/transcript format](https://derijkp.github.io/genomecomb/format_gene.html).  
 The **cell** field again indicates which cell the counts apply to. In this file (_filtered) 
 only information on the emptydrops approved cells is given, the file
 with _raw provides counts for all detected "cells".

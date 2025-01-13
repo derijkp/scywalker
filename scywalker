@@ -57,6 +57,7 @@ proc scywalkerenv {} {
 	} else {
 		set env(LD_LIBRARY_PATH) $::externdir/lib
 	}
+	set env(scywalkerdir) $scywalkerdir
 	return $scywalkerdir
 }
 
@@ -99,12 +100,16 @@ proc scywalker {args} {
 		} elseif {$key eq "-sc_whitelist"} {
 			if {$value in "10Xv3 v3"} {
 				set whitelist $::scywalkerdir/whitelists/3M-february-2018.txt.gz
+			} elseif {$value in "10Xv4 v4"} {
+				set whitelist $::scywalkerdir/whitelists/3M-3pgex-may-2023_TRU.txt.gz
+			} elseif {$value in "10Xp5v3 p5v3"} {
+				set whitelist $::scywalkerdir/whitelists/3M-5pgex-jan-2023.txt.gz
 			} elseif {$value in "10Xv2 v2"} {
 				set whitelist $::scywalkerdir/whitelists/737K-august-2016.txt.gz
 			} elseif {[file exists $value]} {
 				set whitelist $value
 			} else {
-				error "given -sc_whitelist file \"$value\" does not exist, must be an existing file or one of: v3, v2"
+				error "given -sc_whitelist file \"$value\" does not exist, must be an existing file or one of: v4, p5v3, v3, v2"
 			}
 			lappend remove $pos [expr {$pos + 1}]
 		}
