@@ -205,7 +205,7 @@ proc scywalker_makerefdir {args} {
 	if {$pacbioindex} {
 		# minimap2_splice index
 		puts "Making minimap2 pacbio index (can take large amount of memory)"
-		exec cg refseq_minimap2 $result:hq splice
+		catch_exec cg refseq_minimap2 $result splice:hq
 	}
 
 	set target $refdir/genome_${build}.dict
