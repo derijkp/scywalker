@@ -133,13 +133,32 @@ proc scywalker {args} {
 		puts stderr "yum install -y fontconfig"
 		exit 1
 	}
-	if {[file exists $dir/samples]} {
+	if {![file exists $dir]} {
+		if {"-samplesheet" ni $args} {
+			puts stderr "The given directory \"$dir\" does not exist, and the option -samplesheet is not given to create it on the fly"
+			exit 1
+		}
+		exec cg process_project \
+			-preset $preset -sc_whitelist $whitelist \
+			{*}$args >@ stdout 2>@ stderr
+	} elseif {[file exists $dir/samples]} {
 		exec cg process_project \
 			-preset $preset -sc_whitelist $whitelist \
 			{*}$args >@ stdout 2>@ stderr
 	} elseif {![file exists $dir/fastq]} {
-		puts stderr "The given directory \"$dir\" has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"
-		exit 1
+		if {"-samplesheet" in $args} {
+			if {[file isdir $dir]} {
+				exec cg process_project \
+					-preset $preset -sc_whitelist $whitelist \
+					{*}$args >@ stdout 2>@ stderr
+			} else {
+				puts stderr "It looks like you wanted to use the samplesheet option, but \"$dir\" already exist and is not a directory"
+				exit 1
+			}
+		} else {
+			puts stderr "The given directory \"$dir\" has no subdirectory fastq (which a sample directory should have), nor a subdirectory samples (which a project/experiment directory should have)"
+			exit 1
+		}
 	} else {
 		exec cg process_sample \
 			-preset scywalker -sc_whitelist $whitelist \
