@@ -36,19 +36,19 @@ needed depencies compiled in a way that they should work on all (except very
 ancient) Linux systems.
 
 Installation of the package is as simple as downloading the
-[distribution](https://github.com/derijkp/scywalker/releases/download/0.110.0/scywalker-0.110.0-linux-x86_64.tar.gz)
+[distribution](https://github.com/derijkp/scywalker/releases/download/0.111.0/scywalker-0.111.0-linux-x86_64.tar.gz)
 from github
 ([https://github.com/derijkp/scywalker](https://github.com/derijkp/scywalker))
 and unpacking it, e.g.: 
 ```
 cd ~/bin
-wget https://github.com/derijkp/scywalker/releases/download/0.110.0/scywalker-0.110.0-linux-x86_64.tar.gz
-tar xvzf scywalker-0.110.0-linux-x86_64.tar.gz
-rm scywalker-0.110.0-linux-x86_64.tar.gz
+wget https://github.com/derijkp/scywalker/releases/download/0.111.0/scywalker-0.111.0-linux-x86_64.tar.gz
+tar xvzf scywalker-0.111.0-linux-x86_64.tar.gz
+rm scywalker-0.111.0-linux-x86_64.tar.gz
 ```
 
 You can call the executables (scywalker, cg) directly from the directory
-using the path (e.g. `~/bin/scywalker-0.110.0-linux-x86_64/scywalker ..`) 
+using the path (e.g. `~/bin/scywalker-0.111.0-linux-x86_64/scywalker ..`) 
 or by placing the directory in the PATH environment variable (e.g. using 
 `export PATH=~/bin/:$PATH`)
 You can also place soft-links to the executables in a directory already in
@@ -56,14 +56,15 @@ the PATH. (remark: The executable itself needs to stay in the application
 directory to find it's dependencies), e.g.
 ```
 cd ~/bin
-ln -s scywalker-0.110.0-linux-x86_64/scywalker .
-ln -s scywalker-0.110.0-linux-x86_64/scywalker_makerefdir .
-ln -s scywalker-0.110.0-linux-x86_64/cg .
+ln -s scywalker-0.111.0-linux-x86_64/scywalker .
+ln -s scywalker-0.111.0-linux-x86_64/scywalker_makerefdir .
+ln -s scywalker-0.111.0-linux-x86_64/sw .
+ln -s scywalker-0.111.0-linux-x86_64/cg .
 ```
 
 Scywalker is largely implemented within [genomecomb](https://github.com/derijkp/genomecomb), 
 and its distribution comes with an appropriate full version of genomecomb,
-which can be run using the cg executable, providing  which also provides
+which can be run using the cg or sw executable, which also provides
 multiple usefull extra tools for querying tsv files, etc.
 
 Example/test run
@@ -256,8 +257,8 @@ data set would be
 `-d`
     By default the command is run using a single core (=slow). Use the `-d` option to specify the
     manner of job distribution/parallelisation. Use a number to specify distribution
-    over (max) the given number of cores on the local machine, while "sge" or
-    "slurm" will distribute jobs over a Grid Engine or SLURM cluster.
+    over (max) the given number of cores on the local machine, while specifying "sge" or
+    "slurm" here is one way (see next for other) to distribute jobs over a Grid Engine or SLURM cluster.
     On a cluster the command will finish after submitting all jobs (with dependencies).
     For distributed runs a tab separated log file is created (in the projectdir) named
     process_project_<projectname>.<starttime>.running
@@ -268,6 +269,13 @@ data set would be
     logfile.
     More information on options for distribution options can be found in the
     [genomecomb joboptions help](https://derijkp.github.io/genomecomb/joboptions.html)
+
+`-dsubmit`
+    Some clusters limit the number of concurrent submitted jobs. This option provides an alternative
+    method for distribution that works on those: You specify the (maximum) number of jobs
+    that can be submitted using the -d <number> option, and add sge or slurm here to indicate
+    which job management system will be submitted to. Using this method, the command will have keep
+    running until all jobs are finished.
 
 `-dmaxmem`
     The maximum memory to be used (reserved) when running distributed on a local machine.
@@ -286,7 +294,7 @@ The following settings influence how **barcodes and UMIs** are found, and some c
     `-sc_whitelist v2`
     Other versions you can use are v4 for the 3' version 4 and p5v3 for the 5' version 3 (for version 2 the 5' whitelist is the same as the 3').
     You can also specify a different whitelist by giving a file containing the barcodes, e.g. for 10x v2 using
-    `-sc_whitelist ~/bin/scywalker-0.110.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
+    `-sc_whitelist ~/bin/scywalker-0.111.0-linux-x86_64/whitelists/737K-august-2016.txt.gz`
     You can also choose to not use a whitelist by specifying an empty for the option using
     `-sc_whitelist ''`
 
@@ -350,7 +358,7 @@ data=read.table(pipe("zstdcat file.tsv.zst"), sep="\t",header=T)
 ```
 or if zstdcat is not installed, the included genomecomb command for this can be used:
 ```
-data=read.table(pipe("cg zcat file.tsv.zst"), sep="\t",header=T)
+data=read.table(pipe("sw zcat file.tsv.zst"), sep="\t",header=T)
 ```
 
 Result files also usualy have an accompanying file with the .analysisinfo
@@ -502,7 +510,7 @@ more nicely formatted overview of the errors (if you do not specify the
 logfile, it will take the most recent one in the current working
 directory):
 ```
-cg error_report ?logfile?
+sw error_report ?logfile?
 ```
 In this you can check the error messages, time run, etc.
 With the **runfile** given in this output, you can try to run specific jobs separately
@@ -515,46 +523,52 @@ You can call these using `cg toolname ...` or `sw toolname ...` if you want
 to specifically use the scywalker version. You can get an overview
 of all tools in genomecomb using
 ```
-cg help
+sw help
 ```
 and help on specific tools using
 ```
-cg toolname -h
+sw toolname -h
 ```
 Following tools are typically useful for scywalker analysis:
 
 ```
-cg viz_transcripts ?options? isoform_counts_file gene output_file
+sw viz_transcripts ?options? isoform_counts_file gene output_file
 ```
 [viz_transcripts](https://derijkp.github.io/genomecomb/cg_viz_transcripts.html)
 can be used to create a visual presentation of isoform usage of a given gene. get more help
 
 ```
-cg sc_pseudobulk scgenefile scisoformfile groupfile
+sw sc_pseudobulk scgenefile scisoformfile groupfile
 ```
 [sc_pseudobulk](https://derijkp.github.io/genomecomb/cg_sc_pseudobulk.html)
 make pseudobulk files of sc_gene and sc_transcript files based on an sc_group file
 
 ```
-cg multitranscript ?options? multitranscriptfile transcriptfile transcriptfile ?transcriptfile? ...
+sw sc_demultiplex sampledir dmfile refseq
+```
+[sc_demultiplex](https://derijkp.github.io/genomecomb/cg_sc_demultiplex.html) can be used to 
+demultiplex ont single cell results into separate samples based on a demultiplexing file
+
+```
+sw multitranscript ?options? multitranscriptfile transcriptfile transcriptfile ?transcriptfile? ...
 ```
 [multitranscript](https://derijkp.github.io/genomecomb/cg_multitranscript.html)
 can be used to combine separate per sample transcript files in one multisample transcript file
 
 ```
-cg viz file.tsv
+sw viz file.tsv
 ```
 The [viz](https://derijkp.github.io/genomecomb/cg_viz.html) tool
 can be used to browse and query (compressed) tsv result files using a graphical interface
 
 ```
-cg select ?options? ?datafile? ?outfile?
+sw select ?options? ?datafile? ?outfile?
 ```
 Using the [select](https://derijkp.github.io/genomecomb/cg_select.html) tool,
 you can query the tsv result files on the command-line
 
 ```
-cg zcat file ...
+sw zcat file ...
 ```
 [zcat](https://derijkp.github.io/genomecomb/cg_zcat.html)
 will concatenate (potentially compressed) files to standard output. It differs from
