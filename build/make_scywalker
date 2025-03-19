@@ -1,7 +1,7 @@
 #!/bin/sh
 
 builddir=$HOME/build
-version=0.110.0
+version=0.111.0
 
 srcdir=$HOME/dev/scywalker
 cgbin=$builddir/genomecomb-$version-linux-x86_64
@@ -24,7 +24,7 @@ cp -ralf ../minimap2 extra
 
 cp -ralf ../cramino extra
 
-cp -ralf ../isoquant-3.3.0-linux-x86_64 extra
+cp -ralf ../isoquant-3.6.3-linux-x86_64 extra
 cp -ralf ../isoquant extra
 cp -ralf ../isoquant3 extra
 cp -ralf ../isoquant_gtf2db extra

@@ -14,19 +14,19 @@ RUN apt-get update \
 
 WORKDIR /usr/local/bin
 
-RUN wget https://github.com/derijkp/scywalker/releases/download/0.110.0/scywalker-0.110.0-linux-x86_64.tar.gz \
-  && tar xvzf scywalker-0.110.0-linux-x86_64.tar.gz \
-  && rm -f scywalker-0.110.0-linux-x86_64.tar.gz
-RUN chmod go+rX /usr/local/bin/scywalker-0.110.0-linux-x86_64
+RUN wget https://github.com/derijkp/scywalker/releases/download/0.111.0/scywalker-0.111.0-linux-x86_64.tar.gz \
+  && tar xvzf scywalker-0.111.0-linux-x86_64.tar.gz \
+  && rm -f scywalker-0.111.0-linux-x86_64.tar.gz
+RUN chmod go+rX /usr/local/bin/scywalker-0.111.0-linux-x86_64
 
 RUN mkdir -p /home/user
 RUN chmod ugo+rwX /home/user
 ENV HOME=/home/user
 
-RUN ln -sf scywalker-0.110.0-linux-x86_64/scywalker_makerefdir scywalker_makerefdir
+RUN ln -sf scywalker-0.111.0-linux-x86_64/scywalker_makerefdir scywalker_makerefdir
 
-RUN ln -sf scywalker-0.110.0-linux-x86_64/sw sw
+RUN ln -sf scywalker-0.111.0-linux-x86_64/sw sw
 
-RUN ln -sf scywalker-0.110.0-linux-x86_64/cg cg
+RUN ln -sf scywalker-0.111.0-linux-x86_64/cg cg
 
 CMD ["scywalker", "help"]
