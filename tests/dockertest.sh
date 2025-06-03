@@ -129,6 +129,10 @@ if [ "$1" = "stage2" ] ; then
 		echo "test ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-test
 	else
 		echo "did not install sudo ($image)"
+		apt update || true
+		apt -y install sudo || true
+		adduser test sudo || true
+		echo "test ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-test
 	fi
 	# (re)start script for stage 3: running the actual code
 	sudo -u test bash /io/$file "stage3" "$file" "$bits" "$uid" "$gid" "$srcdir" "$testdir" "$bindir" "$image" ${arguments[*]}
