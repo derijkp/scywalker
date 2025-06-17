@@ -283,6 +283,25 @@ data set would be
     available (based on requested memory by running jobs). Jobs that use more memory than requested
     will not be stopped by this. This option will have no effect when running on a cluster
 
+Joint Analysis
+--------------
+
+The level of proof for adding a novel isoform is a lot higher than for counting a known one. This sometimes causes
+real isoforms to be only detected in some samples, while they are present (typically in low abundance) in the other samples.
+joint analysis solves this by reanalysing each sample with selected novel isoforms detected in the first pass treated
+as "known" samples in the second pass
+
+`-iso_joint isoquant`
+    perform joint analysis on the isoquant analysis: the resulting isoforms of all per sample runs are combined, 
+    and each sample is recalled with the combination of isoforms (including novel ones found in at least 2 samples default) 
+    treated as reference/known transcripts
+`-iso_joint_min`
+    integer: minimum number of samples an isoform has to be found in to be included in the joint analysis.
+    The default value is 2. You can set this to 1, but this will include a lot more artifact isoforms 
+    detected in only one of the samples (increasing runtime considerably). If you have a lot of samples,
+    you can increase this value to reduce the number random/artefacts isoforms.
+
+
 Other options
 -------------
 Scywalker defaults to analysis of the 10x v3 protocol. 
