@@ -1,1 +1,4 @@
 build/** linguist-vendored
+tests/dockertest.sh linguist-vendored
+scywalker linguist-language=Tcl
+scywalker_makerefdir linguist-language=Tcl
