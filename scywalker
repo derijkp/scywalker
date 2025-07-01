@@ -106,6 +106,10 @@ proc scywalker {args} {
 				set whitelist $::scywalkerdir/whitelists/3M-5pgex-jan-2023.txt.gz
 			} elseif {$value in "10Xv2 v2"} {
 				set whitelist $::scywalkerdir/whitelists/737K-august-2016.txt.gz
+			} elseif {$value in "multiome"} {
+				set whitelist $::scywalkerdir/whitelists/737K-arc-gex-v1.txt.gz
+			} elseif {$value in "multiome_atac"} {
+				set whitelist $::scywalkerdir/whitelists/737K-arc-atac-v1.txt.gz
 			} elseif {$value eq ""} {
 				set whitelist ""
 			} elseif {[file exists $value]} {
